@@ -1,0 +1,16 @@
+FASE 2 — ACTUALIZACIÓN DIARIA V3.3
+
+Copia estos dos archivos dentro de C:\FantasyLaLiga\src:
+
+1. actualizar_y_ejecutar_v3_3.py
+2. ejecutar_diario_v3_3.bat
+
+El BAT ejecuta, en este orden:
+1) laliga_fantasy.py
+2) historico_precios.py
+3) motor_diario_v3_3.py
+
+IMPORTANTE:
+- No modifica ninguna fórmula de la V3.3.
+- No sustituye backtest_v3_3.py.
+- Primero prueba el BAT manualmente antes de programarlo con Windows.
