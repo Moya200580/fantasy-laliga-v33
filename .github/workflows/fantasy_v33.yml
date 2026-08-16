@@ -3,6 +3,9 @@ name: Fantasy LaLiga V3.3
 on:
   workflow_dispatch:
 
+  schedule:
+    - cron: "0 8 * * *"
+
 jobs:
   test:
     runs-on: ubuntu-latest
