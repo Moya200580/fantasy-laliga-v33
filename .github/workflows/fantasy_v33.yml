@@ -58,16 +58,14 @@ jobs:
               os.environ["X_ACCESS_TOKEN_SECRET"]
           )
 
-          api = tweepy.API(auth)
+client = tweepy.Client(
+    consumer_key=os.environ["X_API_KEY"],
+    consumer_secret=os.environ["X_API_KEY_SECRET"],
+    access_token=os.environ["X_ACCESS_TOKEN"],
+    access_token_secret=os.environ["X_ACCESS_TOKEN_SECRET"]
+)
 
-          api.verify_credentials()
-
-          client = tweepy.Client(
-              consumer_key=os.environ["X_API_KEY"],
-              consumer_secret=os.environ["X_API_KEY_SECRET"],
-              access_token=os.environ["X_ACCESS_TOKEN"],
-              access_token_secret=os.environ["X_ACCESS_TOKEN_SECRET"]
-          )
+response = client.create_tweet(text=text)
 
           response = client.create_tweet(text=text)
 
