@@ -7,7 +7,7 @@ on:
     - cron: "0 8 * * *"
 
 jobs:
-  test:
+  fantasy-laliga:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,7 +22,7 @@ jobs:
       - name: Instalar dependencias
         run: |
           python -m pip install --upgrade pip
-          pip install pandas requests numpy tweepy
+          pip install pandas requests numpy
 
       - name: Ejecutar actualización y V3.3
         run: |
@@ -31,42 +31,14 @@ jobs:
       - name: Comprobar post generado
         run: |
           test -f datos/post_diario_v3_3.txt
-          echo "Post encontrado:"
+          echo "========================================"
+          echo "POST DIARIO V3.3 GENERADO CORRECTAMENTE"
+          echo "========================================"
           cat datos/post_diario_v3_3.txt
 
-      - name: Publicar post en X
-        env:
-          X_API_KEY: ${{ secrets.X_API_KEY }}
-          X_API_KEY_SECRET: ${{ secrets.X_API_KEY_SECRET }}
-          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
-          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
-        run: |
-          python - <<'PY'
-          import os
-          import tweepy
-
-          with open("datos/post_diario_v3_3.txt", "r", encoding="utf-8") as f:
-              text = f.read().strip()
-
-          if not text:
-              raise RuntimeError("El post está vacío")
-
-          auth = tweepy.OAuth1UserHandler(
-              os.environ["X_API_KEY"],
-              os.environ["X_API_KEY_SECRET"],
-              os.environ["X_ACCESS_TOKEN"],
-              os.environ["X_ACCESS_TOKEN_SECRET"]
-          )
-
-          client = tweepy.Client(
-            consumer_key=os.environ["X_API_KEY"],
-            consumer_secret=os.environ["X_API_KEY_SECRET"],
-            access_token=os.environ["X_ACCESS_TOKEN"],
-            access_token_secret=os.environ["X_ACCESS_TOKEN_SECRET"]
-          )
-
-          response = client.create_tweet(text=text)
-
-          print("Publicado correctamente en X")
-          print(response.data)
-          PY
+      - name: Guardar post diario
+        uses: actions/upload-artifact@v4
+        with:
+          name: post-diario-v3-3
+          path: datos/post_diario_v3_3.txt
+          retention-days: 30
