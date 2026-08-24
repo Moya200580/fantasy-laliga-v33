@@ -32,13 +32,53 @@ jobs:
         run: |
           test -f datos/post_diario_v3_3.txt
           echo "========================================"
-          echo "POST DIARIO V3.3 GENERADO CORRECTAMENTE"
+          echo "POST DIARIO V3.3 GENERADO"
           echo "========================================"
           cat datos/post_diario_v3_3.txt
 
-      - name: Guardar post diario
+      - name: Guardar post como Artifact
         uses: actions/upload-artifact@v4
         with:
           name: post-diario-v3-3
           path: datos/post_diario_v3_3.txt
           retention-days: 30
+
+      - name: Enviar post por correo
+        env:
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import os
+          import smtplib
+          from email.message import EmailMessage
+
+          gmail = os.environ["GMAIL_ADDRESS"]
+          password = os.environ["GMAIL_APP_PASSWORD"]
+
+          with open("datos/post_diario_v3_3.txt", "r", encoding="utf-8") as f:
+              post = f.read().strip()
+
+          if not post:
+              raise RuntimeError("El post diario está vacío")
+
+          msg = EmailMessage()
+          msg["Subject"] = "Fantasy LaLiga V3.3 - Post diario"
+          msg["From"] = gmail
+          msg["To"] = "daviddelamoyagarcia@gmail.com"
+
+          msg.set_content(
+              "POST DIARIO V3.3\n"
+              "================\n\n"
+              + post
+              + "\n\n"
+              "Copia el contenido anterior y publícalo en X."
+          )
+
+          with smtplib.SMTP("smtp.gmail.com", 587) as server:
+              server.starttls()
+              server.login(gmail, password)
+              server.send_message(msg)
+
+          print("Correo enviado correctamente.")
+          PY
