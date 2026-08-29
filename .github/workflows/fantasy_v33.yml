@@ -78,6 +78,6 @@ jobs:
           with smtplib.SMTP("smtp.gmail.com", 587) as server:
             server.set_debuglevel(1)
             server.starttls()
-    server.login(gmail, password)
-    server.send_message(msg)
-          PY
+            server.login(gmail, password)
+            server.send_message(msg)
+            PY
