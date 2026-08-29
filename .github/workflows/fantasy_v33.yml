@@ -1,15 +1,11 @@
 name: Fantasy LaLiga V3.3
-
 on:
   workflow_dispatch:
-
   schedule:
     - cron: "0 8 * * *"
-
 jobs:
   fantasy-laliga:
     runs-on: ubuntu-latest
-
     steps:
       - name: Descargar proyecto
         uses: actions/checkout@v4
@@ -48,7 +44,7 @@ jobs:
           GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
         run: |
-          python - <<'PY'
+          cat > /tmp/enviar_correo.py <<'PY'
           import os
           import smtplib
           from email.message import EmailMessage
@@ -66,7 +62,6 @@ jobs:
           msg["Subject"] = "Fantasy LaLiga V3.3 - Post diario"
           msg["From"] = gmail
           msg["To"] = "daviddelamoyagarcia@gmail.com"
-
           msg.set_content(
               "POST DIARIO V3.3\n"
               "================\n\n"
@@ -80,4 +75,5 @@ jobs:
               server.starttls()
               server.login(gmail, password)
               server.send_message(msg)
-      
+          PY
+          python /tmp/enviar_correo.py
