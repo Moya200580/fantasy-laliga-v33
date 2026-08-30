@@ -10,6 +10,12 @@ anterior.
 Usa las 4 claves de OAuth 1.0a (permiso "Leer y escribir") guardadas
 como secrets de GitHub:
   X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_TOKEN_SECRET
+
+MODO DE PRUEBA: si la variable de entorno X_DRY_RUN vale "true", el
+script NO llama a la API de pago de X. Solo simula la publicación e
+imprime en los logs lo que se habría enviado. Útil para probar todo
+el pipeline (generación del post, división en hilo, credenciales)
+antes de tener saldo cargado en el portal de desarrolladores de X.
 """
 
 import os
@@ -45,6 +51,23 @@ def cargar_tweets():
 
 
 def main():
+    dry_run = os.environ.get("X_DRY_RUN", "false").strip().lower() == "true"
+    tweets = cargar_tweets()
+
+    if dry_run:
+        print("=" * 70)
+        print("MODO DE PRUEBA (X_DRY_RUN=true) — no se publica nada de verdad")
+        print("=" * 70)
+        print(f"Se simularían {len(tweets)} tweet(s) en hilo:\n")
+        for i, texto in enumerate(tweets, 1):
+            ok = "OK" if len(texto) <= 280 else "¡EXCEDE 280 CARACTERES!"
+            print(f"--- Tweet {i}/{len(tweets)} ({len(texto)} caracteres) [{ok}] ---")
+            print(texto)
+            print()
+        print("Prueba completada sin gastar saldo. Cuando tengas crédito en X,")
+        print("quita X_DRY_RUN (o ponlo en false) para publicar de verdad.")
+        return
+
     client = tweepy.Client(
         consumer_key=os.environ["X_API_KEY"],
         consumer_secret=os.environ["X_API_SECRET"],
@@ -52,7 +75,6 @@ def main():
         access_token_secret=os.environ["X_ACCESS_TOKEN_SECRET"],
     )
 
-    tweets = cargar_tweets()
     print(f"Se van a publicar {len(tweets)} tweet(s) en hilo.")
 
     id_anterior = None
