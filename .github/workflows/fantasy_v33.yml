@@ -45,6 +45,7 @@ jobs:
 
       - name: Publicar en X
         env:
+          X_DRY_RUN: "true"
           X_API_KEY: ${{ secrets.X_API_KEY }}
           X_API_SECRET: ${{ secrets.X_API_SECRET }}
           X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
