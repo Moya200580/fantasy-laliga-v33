@@ -18,7 +18,7 @@ jobs:
       - name: Instalar dependencias
         run: |
           python -m pip install --upgrade pip
-          pip install pandas requests numpy
+          pip install pandas requests numpy tweepy
 
       - name: Ejecutar actualización y V3.3
         run: |
@@ -43,6 +43,15 @@ jobs:
           path: datos/post_diario_v3_3.txt
           retention-days: 30
 
+      - name: Publicar en X
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        run: |
+          python src/publicar_en_x.py
+
       - name: Enviar post por correo
         env:
           GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
@@ -63,15 +72,13 @@ jobs:
               raise RuntimeError("El post diario está vacío")
 
           msg = EmailMessage()
-          msg["Subject"] = "Fantasy LaLiga V3.3 - Post diario"
+          msg["Subject"] = "Fantasy LaLiga V3.3 - Post diario (ya publicado en X)"
           msg["From"] = gmail
           msg["To"] = "daviddelamoyagarcia@gmail.com"
           msg.set_content(
-              "POST DIARIO V3.3\n"
+              "POST DIARIO V3.3 (ya publicado automáticamente en X)\n"
               "================\n\n"
               + post
-              + "\n\n"
-              "Copia el/los tweet(s) de arriba y publícalos en X."
           )
 
           with smtplib.SMTP("smtp.gmail.com", 587) as server:
