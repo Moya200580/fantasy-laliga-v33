@@ -24,6 +24,10 @@ jobs:
         run: |
           python src/actualizar_y_ejecutar_v3_3.py
 
+      - name: Generar post variado según el día
+        run: |
+          python src/generar_post_variado.py
+
       - name: Comprobar post generado
         run: |
           test -f datos/post_diario_v3_3.txt
@@ -49,8 +53,8 @@ jobs:
           import smtplib
           from email.message import EmailMessage
 
-          gmail = os.environ["GMAIL_ADDRESS"]
-          password = os.environ["GMAIL_APP_PASSWORD"]
+          gmail = os.environ["GMAIL_ADDRESS"].strip()
+          password = os.environ["GMAIL_APP_PASSWORD"].strip()
 
           with open("datos/post_diario_v3_3.txt", "r", encoding="utf-8") as f:
               post = f.read().strip()
@@ -67,7 +71,7 @@ jobs:
               "================\n\n"
               + post
               + "\n\n"
-              "Copia el contenido anterior y publícalo en X."
+              "Copia el/los tweet(s) de arriba y publícalos en X."
           )
 
           with smtplib.SMTP("smtp.gmail.com", 587) as server:
